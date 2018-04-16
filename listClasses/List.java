@@ -11,8 +11,8 @@ public interface List {
 
 	AbsCollaboratorClass getCollabByIndex(int index);
 
-	int addCollaborator(String type, int pay, String name);
+	void addCollaborator(AbsCollaboratorClass newGuy);
 
-	int addCollaborator(String type, int pay, String name, String rep);
+	void updateCollab(String name);
 
 }

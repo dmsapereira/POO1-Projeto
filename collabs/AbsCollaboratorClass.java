@@ -3,7 +3,7 @@ package collabs;
 public abstract class AbsCollaboratorClass implements AbsCollaborator {
 	protected String name;
 	protected int salary;
-	//EventList aqui
+	// EventList aqui
 
 	public AbsCollaboratorClass(String name, int salary) {
 		this.name = name;
@@ -21,9 +21,14 @@ public abstract class AbsCollaboratorClass implements AbsCollaborator {
 		// TODO Auto-generated method stub
 		return salary;
 	}
-	
+
+	@Override
+	public boolean equals(AbsCollaboratorClass target) {
+		return (target.getName().equals(this.name));
+	}
+
 	public Event getEventByIndex(int index) {
-		
+
 	}
 
 }

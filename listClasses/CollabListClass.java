@@ -4,8 +4,14 @@ import collabs.AbsCollaboratorClass;
 import generics.ArrayClass;
 
 public class CollabListClass implements List {
-	public static final int DEFAULT_SIZE = 50;
-	ArrayClass<AbsCollaboratorClass> collabs;
+	public static final String SENIOR = "SENIOR";
+	public static final String JUNIOR = "JUNIOR";
+	public static final String REALIZADOR = "REALIZADOR";
+	public static final String TECHNICIAN = "TECNICO";
+	public static final String ACTOR = "ACTOR";
+	public static final String VEDETA = "VEDETA";
+	public static final String NORMAL = "NORMAL";
+	protected ArrayClass<AbsCollaboratorClass> collabs;
 
 	public CollabListClass() {
 		collabs = new ArrayClass<AbsCollaboratorClass>();
@@ -35,12 +41,9 @@ public class CollabListClass implements List {
 	}
 
 	@Override
-	public int addCollaborator(AbsCollaboratorClass newGuy) {
+	public void addCollaborator(AbsCollaboratorClass newGuy) {
 		// TODO Auto-generated method stub
-		if(searchByName(newGuy.getName())==null)
-			collabs.insertLast(newGuy);
-		else
-			return null;
+		collabs.insertLast(newGuy);
 	}
 
 	private AbsCollaboratorClass searchByName(String name) {
@@ -49,6 +52,12 @@ public class CollabListClass implements List {
 				return collabs.get(i);
 		}
 		return null;
+	}
+
+	@Override
+	public void updateCollab(String name) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

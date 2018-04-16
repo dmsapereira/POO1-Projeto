@@ -1,14 +1,14 @@
 package collabs;
 
 public class ProducerClass extends AbsCollaboratorClass {
-	private boolean reputation;
+	private String reputation;
 
-	public ProducerClass(String name, int index, boolean rep) {
+	public ProducerClass(String name, int index, String rep) {
 		super(name, index);
 		reputation = rep;
 	}
 
-	public boolean getRep() {
+	public String getRep() {
 		return reputation;
 	}
 }
