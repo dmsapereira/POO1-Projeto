@@ -8,6 +8,4 @@ public interface AbsCollaborator {
 
 	boolean equals(AbsCollaboratorClass target);
 
-	Event getEventByIndex(int index);
-
 }

@@ -7,7 +7,7 @@ public abstract class AbsCollaboratorClass implements AbsCollaborator {
 
 	public AbsCollaboratorClass(String name, int salary) {
 		this.name = name;
-		this.salary = salary;
+		this.salary = salary; 
 	}
 
 	@Override
@@ -25,10 +25,6 @@ public abstract class AbsCollaboratorClass implements AbsCollaborator {
 	@Override
 	public boolean equals(AbsCollaboratorClass target) {
 		return (target.getName().equals(this.name));
-	}
-
-	public Event getEventByIndex(int index) {
-
 	}
 
 }

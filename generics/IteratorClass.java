@@ -5,7 +5,7 @@ public class IteratorClass<E> implements Iterator<E> {
 	private int counter;
 	private int current;
 
-	public IteratorClass(E[] vector, int counter) {
+	public IteratorClass(E[] vector, int counter) { 
 		this.vector = vector;
 		this.counter = counter;
 		init();

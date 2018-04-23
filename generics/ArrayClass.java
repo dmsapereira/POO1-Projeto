@@ -77,7 +77,7 @@ public class ArrayClass<E> implements Array<E> {
 
 	@Override
 	public int size() {
-		return counter;
+		return counter; 
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class ArrayClass<E> implements Array<E> {
 	
 
 	@Override
-	public Iterator<E> iterator() {
+	public Iterator<E> iterator() { 
 		return new IteratorClass<E>(array,counter);
 	}
 
