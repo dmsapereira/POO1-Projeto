@@ -1,15 +1,41 @@
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import generics.Iterator;
 
 public class Main {
 
-	private static final String AJUDA = "AJUDA";
-	private static final String EXIT = "SAI";
-	private static final String REGISTA = "REGISTA";
-	private static final String STAFF = "STAFF";
+	private static final String FORMAT_DATE = "%d %d %d";
+	private static final String FORMAT_DATE_TIME = "%d %d %d %d %d\n";
 
-	private static String readCommand(Scanner in, Planner system) {
+	public static final String AJUDA = "AJUDA";
+	public static final String EXIT = "SAI";
+	public static final String REGISTA = "REGISTA";
+	public static final String STAFF = "STAFF";
+	public static final String AMUA = "AMUA";
+	public static final String RECON = "RECONCILIA";
+	public static final String AMUANCOS = "AMUANCOS";
+	public static final String MARCA = "MARCA";
+	public static final String GRAVA = "GRAVA";
+	public static final String LOCAL = "LOCAL";
+	public static final String COLABORADOR = "COLABORADOR";
+	public static final String REALIZADAS = "REALIZADAS";
+	public static final String PREVISTAS = "PREVISTAS";
+	public static final String ACTOR = "ACTOR";
+	public static final String SENIOR = "SENIOR";
+	public static final String JUNIOR = "JUNIOR";
+	public static final String TECHNICIAN = "TECNICO";
+	public static final String DIRECTOR = "REALIZADOR";
+	public static final String NORMAL = "NORMAL";
+	public static final String VEDETA = "VEDETA";
+	private static final String SCENARIOS = "CENARIOS";
+	private static final String SCENARIO = "CENARIO";
+
+	private static String readCommand(Scanner in, PlannerClass system) {
 		String option;
 		option = in.next().toUpperCase();
+		in.nextLine();
 		switch (option) {
 		case AJUDA:
 			printHelp();
@@ -20,51 +46,355 @@ public class Main {
 		case STAFF:
 			printStaff(system);
 			break;
+		case AMUA:
+			amua(in, system);
+			break;
+		case RECON:
+			reconcile(in, system);
+			break;
+		case AMUANCOS:
+			listBl(in, system);
+			break;
+		case MARCA:
+			schedule(in, system);
+			break;
+		case GRAVA:
+			record(system);
+			break;
+		case SCENARIOS:
+			listPlaces(system);
+			break;
+		case SCENARIO:
+			createPlace(in, system);
+			break;
+		case PREVISTAS:
+			listFuture(system);
+			break;
+		case REALIZADAS:
+			listaPast(system);
+			break;
+		case COLABORADOR:
+			listColabSched(in, system);
+			break;
+		case LOCAL:
+			listLocalSched(in, system);
+			break;
+
 		default:
+
 		}
 		return option;
 
 	}
 
-	private static void registerWorker(Scanner in, Planner system) {
-		String status = "";
-		String type = in.next().toUpperCase();
-		if (!(type.equals("TECNICO") || type.equals("SENIOR") || type.equals("JUNIOR")))
-			status = in.next().toUpperCase();
+	private static void record(PlannerClass system) {
+		Event aux = system.doEvent();
+		if (aux == null)
+			System.out.println("Nenhuma gravacao agendada.");
+		else {
+			System.out.printf(FORMAT_DATE, aux.getStart().getYear(), aux.getStart().getMonthValue(),
+					aux.getStart().getDayOfMonth());
+			System.out.print("; " + aux.getPlace().getName() + "; " + aux.getProd().getName() + "; "
+					+ aux.getDir().getName() + ". ");
+			if (aux.isOnHold() || aux.isSuspendedSenior())
+				System.out.println("Cancelada!");
+			else
+				System.out.println("Gravada!");
+		}
+	}
 
-		in.nextLine();
-		int cost = in.nextInt();
-		in.nextLine();
-		String name = in.next();
-		system.addWorker(type, status, cost, name);
+	private static void listLocalSched(Scanner in, PlannerClass system) {
+		String scenario = in.nextLine().trim();
+		Iterator<Event> itera = system.getPlaceEvents(scenario);
+		Event aux;
+		int sum = 0;
+		if (system.doesPlaceExist(scenario) == false)
+			System.out.println("Local desconhecido.");
+		else if (itera.hasNext() == false)
+			System.out.println("Nenhuma gravacao prevista em " + scenario + ".");
+		else {
+			while (itera.hasNext()) {
+				aux = itera.next();
+				System.out.printf(FORMAT_DATE, aux.getStart().getYear(), aux.getStart().getMonthValue(),
+						aux.getStart().getDayOfMonth());
+				System.out.println("; " + aux.getProd().getName() + "; " + aux.getDir().getName() + ".");
+				sum += aux.getBudget();
+			}
+			System.out.println(sum + " euros orcamentados.");
+		}
+	}
+
+	private static void listColabSched(Scanner in, PlannerClass system) {
+		String collab = in.nextLine().trim();
+		Iterator<Event> itera = system.getCollabEvents(collab);
+		Event aux;
+		int sum = 0;
+		if (system.doesCollabExist(collab) == false)
+			System.out.println("Colaborador desconhecido.");
+		else if (itera.hasNext() == false)
+			System.out.println("Nenhuma gravacao prevista com " + collab + ".");
+		else {
+			while (itera.hasNext()) {
+				aux = itera.next();
+				if (aux.collabExistence(collab)) {
+					System.out.printf(FORMAT_DATE, aux.getStart().getYear(), aux.getStart().getMonthValue(),
+							aux.getStart().getDayOfMonth());
+					System.out.println("; " + aux.getProd().getName() + "; " + aux.getDir().getName() + ".");
+					sum += aux.getBudget();
+				}
+
+			}
+			System.out.println(sum + " euros orcamentados.");
+		}
+	}
+
+	private static void listaPast(PlannerClass system) {
+		Iterator<Event> itera = system.getPastEventsIte();
+		Event aux;
+		int sum = 0;
+		if (itera.hasNext() == false)
+			System.out.println("Nenhuma gravacao realizada.");
+		else {
+			while (itera.hasNext()) {
+				aux = itera.next();
+				System.out.printf(FORMAT_DATE, aux.getStart().getYear(), aux.getStart().getMonthValue(),
+						aux.getStart().getDayOfMonth());
+				System.out.print("; " + aux.getPlace().getName() + "; " + aux.getProd().getName() + "; "
+						+ aux.getDir().getName() + ".");
+				if (aux.isOnHold() == true || aux.isSuspendedSenior() == true)
+					System.out.println(" Cancelada!");
+				else {
+					System.out.println();
+					sum += aux.getBudget();
+				}
+			}
+			System.out.println(sum + " euros gastos.");
+		}
+	}
+
+	private static void listFuture(PlannerClass system) {
+		Iterator<Event> itera = system.getFutureEventsIte();
+		Event aux;
+		int sum = 0;
+		if (itera.hasNext() == false)
+			System.out.println("Nenhuma gravacao prevista.");
+		else {
+			while (itera.hasNext()) {
+				aux = itera.next();
+				System.out.printf(FORMAT_DATE, aux.getStart().getYear(), aux.getStart().getMonthValue(),
+						aux.getStart().getDayOfMonth());
+				System.out.print("; " + aux.getPlace().getName() + "; " + aux.getProd().getName() + "; "
+						+ aux.getDir().getName() + ".");
+				if (aux.isOnHold() || aux.isSuspendedSenior())
+					System.out.println(" Suspensa!");
+				else
+					System.out.println();
+				sum += aux.getBudget();
+
+			}
+			System.out.println(sum + " euros orcamentados.");
+		}
+	}
+
+	private static void listPlaces(PlannerClass system) {
+		Iterator<PlaceClass> itera = system.getPlaces();
+		if (itera.hasNext() == false) {
+			System.out.println("Nao existem localizacoes registadas.");
+		} else {
+			Place aux;
+			while (itera.hasNext()) {
+				aux = itera.next();
+				System.out.println(aux.getName() + " " + aux.getCost() + ".");
+			}
+		}
 
 	}
-//este mete um bocado de nojo mas tentei fazer com enums sem sucesso
-	private static void printStaff(Planner system) {
-		String status = "normal";
-		String type = "";
-		for (int i = 0; i < system.getWorkLCounter(); i++) {
-			if (system.getWorkerByIndex(i) instanceof Superstar) {
-				status = "vedeta";
-			} else if (system.getWorkerByIndex(i) instanceof Senior) {
-				status = "senior";
-			} else if (system.getWorkerByIndex(i) instanceof Junior) {
-				status = "junior";
-			}
-			if (system.getWorkerByIndex(i) instanceof Actor) {
-				type = "actor";
-			} else if (system.getWorkerByIndex(i) instanceof Producer) {
-				type = "produtor";
-			} else if (system.getWorkerByIndex(i) instanceof Director) {
-				type = "realizador";
-			} else {
-				type = "tecnico";
-			}
-			System.out.println(type + " " + status + " " + system.getWorkerByIndex(i).getName() + " "
-					+ system.getWorkerByIndex(i).getCost());
+
+	private static void createPlace(Scanner in, PlannerClass system) {
+		String name = in.nextLine().trim();
+		int cost = in.nextInt();
+		switch (system.addPlace(name, cost)) {
+		case 0:
+			System.out.println("Cenario registado.");
+			break;
+		case 1:
+			System.out.println("Localizacao ja tinha sido registada.");
+			break;
+		case 2:
+			System.out.println("Acha que eles nos pagam para gravar la?");
+			break;
+		default:
+		}
+
+	}
+
+	private static void schedule(Scanner in, PlannerClass system) {
+		int year, month, day, hr, min;
+		int dur;
+		String[] collabs;
+		LocalDateTime start;
+		String place = in.nextLine().trim();
+		year = in.nextInt();
+		month = in.nextInt();
+		day = in.nextInt();
+		hr = in.nextInt();
+		min = in.nextInt();
+		dur = in.nextInt();
+		in.nextLine();
+		start = LocalDateTime.of(year, month, day, hr, min);
+		String producer = in.nextLine().trim();
+		String director = in.nextLine().trim();
+		String technician = in.nextLine().trim();
+		int nCollabs = in.nextInt();
+		in.nextLine();
+		collabs = new String[3 + nCollabs];
+		collabs[0] = producer;
+		collabs[1] = director;
+		collabs[2] = technician;
+		for (int i = 3; i < nCollabs + 3; i++) {
+			collabs[i] = in.nextLine().trim();
+		}
+		switch (system.addEvent(collabs, start, dur, place)) {
+		case 1:
+			System.out.println("Local desconhecido.");
+			break;
+		case 2:
+			System.out.println("Data de gravacao invalida.");
+			break;
+		case 3:
+			System.out.println("Duracao invalida.");
+			break;
+		case 4:
+			System.out.println("Produtor desconhecido.");
+			break;
+		case 5:
+			System.out.println("Realizador desconhecido.");
+			break;
+		case 6:
+			System.out.println("Tecnico desconhecido.");
+			break;
+		case 7:
+			System.out.println("Colaborador desconhecido.");
+			break;
+		case 8:
+			System.out.println("Gravacao pendente de uma birra.");
+			break;
+		case 9:
+			System.out.println("Gravacao nao agendada por conflito de datas.");
+			break;
+		case 10:
+			System.out.println("Gravacao prioritaria agendada provocou mudancas noutra(s) gravacao(oes).");
+			break;
+		case 0:
+			System.out.println("Gravacao agendada com sucesso!");
+			break;
+		default:
+		}
+
+	}
+
+	private static void amua(Scanner in, PlannerClass system) {
+		String vedeta, target;
+		vedeta = in.nextLine().trim();
+		target = in.nextLine().trim();
+		int error = system.addEnemy(vedeta, target);
+		switch (error) {
+		case -1:
+			System.out.println(vedeta + " nao e uma vedeta.");
+			break;
+		case -2:
+			System.out.println(target + " nao e um colaborador.");
+			break;
+		case -3:
+			System.out.println("Que falta de paciencia para divas...");
+			break;
+		default:
+			System.out.println(
+					vedeta + " colocou " + target + " na sua lista negra, suspendendo " + error + " gravacoes.");
+			break;
+		}
+	}
+
+	private static void listBl(Scanner in, PlannerClass system) {
+		String vedetaName = in.nextLine().trim();
+		if (system.getEnemies(vedetaName).iterator() == null)
+			System.out.println("Mas quem e " + vedetaName + ".");
+		else {
+			Iterator<AbsCollaboratorClass> itera = system.getEnemies(vedetaName).iterator();
+			while (itera.hasNext())
+				System.out.println(itera.next().getName());
+		}
+	}
+
+	private static void reconcile(Scanner in, PlannerClass system) {
+		String vedetaName = in.nextLine().trim();
+		String targetName = in.nextLine().trim();
+		int error = system.removeEnemy(vedetaName, targetName); 
+		switch (error) {
+		case -1:
+			System.out.println(vedetaName + " nao e um vedeta.");
+			break;
+		case -2:
+			System.out.println("Nao existe zanga com " + targetName + ".");
+		default:
+			System.out.println(vedetaName + " <3 " + targetName + ". " + error + " gravacoes salvas!");
+		}
+	}
+
+	private static void registerWorker(Scanner in, PlannerClass system) {
+		String status = "";
+		String type = in.next().toUpperCase();
+		if (type.equals(ACTOR) || type.equals(DIRECTOR))
+			status = in.next().toUpperCase();
+		int cost = in.nextInt();
+		String name = in.nextLine().trim();
+		switch (system.addWorker(type, status, cost, name)) {
+		case 0:
+			System.out.println("Colaborador registado com sucesso!");
+			break;
+		case 1:
+			System.out.println("Ja existe um colaborador com o mesmo nome.");
+			break;
+		case 2:
+			System.out.println("Tipo de colaborador desconhecido.");
+			break;
+		case 3:
+			System.out.println("Notoriedade invalida.");
+			break;
+		case 4:
+			System.out.println("Acha mesmo que este colaborador vai pagar para trabalhar?");
+			break;
+		default:
 
 		}
-		System.out.println();
+
+	}
+
+	private static void printStaff(PlannerClass system) {
+		Iterator<AbsCollaboratorClass> itera = system.getCollabIterator();
+		if (itera.hasNext() == false)
+			System.out.println("Nao existem colaboradores registados.");
+		else {
+			while (itera.hasNext()) {
+				AbsCollaboratorClass current = itera.next();
+				if (current instanceof ActorClass) {
+					if (current instanceof AngryCollab)
+						System.out.print("actor vedeta ");
+					else
+						System.out.print("actor normal ");
+				} else if (current instanceof DirectorClass) {
+					if (current instanceof AngryCollab)
+						System.out.print("realizador vedeta ");
+					else
+						System.out.print("realizador normal ");
+				} else if (current instanceof TechnicianClass)
+					System.out.print("tecnico ");
+				else if (current instanceof ProducerClass) {
+					System.out.print("produtor " + ((ProducerClass) current).getRep().toLowerCase() + " ");
+				}
+				System.out.println(current.getName() + " " + current.getPay());
+			}
+		}
 
 	}
 
@@ -86,13 +416,13 @@ public class Main {
 	public static void main(String[] args) {
 
 		Scanner in = new Scanner(System.in);
-		Planner system = new Planner();
+		PlannerClass system = new PlannerClass();
 		String option;
 		do {
+			System.out.print("> ");
 			option = readCommand(in, system);
 		} while (!option.equals(EXIT));
 		System.out.println("Ate a proxima");
-		System.out.println();
 		in.close();
 
 	}

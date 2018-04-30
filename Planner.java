@@ -1,38 +1,38 @@
 
-public class Planner implements WorkerList_Interface {
-	
-	WorkerList workL = new WorkerList();
-	Scenario_List sceneL= new Scenario_List();
-	
-	public Planner() {
+import java.time.LocalDateTime;
 
-	}
-	
-	@Override
-	public void addWorker(String type,String status, int cost, String name) {
-		workL.addWorker(type,status,cost,name); 
-	}
-	
-	@Override
-	public int getWorkLCounter() {
-		return workL.getWorkLCounter();
-	}
-	
-	@Override
-	public Worker getWorkerByIndex(int index) {
-		return workL.getWorkerByIndex(index);
-	}
+import generics.*;
 
-	@Override
-	public int getWorkerIndexByName(String name) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+public interface Planner {
 
-	@Override
-	public Worker getWorkerByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	} 
+	int addWorker(String type, String status, int cost, String name);
+
+	Iterator<AbsCollaboratorClass> getCollabIterator();
+
+	int addEnemy(String vedetaName, String targetName);
+
+	int addPlace(String name, int cost);
+
+	Iterator<PlaceClass> getPlaces();
+
+	int addEvent(String[] collabs, LocalDateTime start, int duration, String scenario);
+
+	int removeEnemy(String vedetaName, String targetName);
+
+	Array<AbsCollaboratorClass> getEnemies(String name);
+
+	Iterator<Event> getPastEventsIte();
+
+	Iterator<Event> getFutureEventsIte();
+
+	boolean doesCollabExist(String name);
+
+	Iterator<Event> getPlaceEvents(String name);
+
+	Iterator<Event> getCollabEvents(String name);
+
+	Event doEvent();
+
+	boolean doesPlaceExist(String name);
 
 }
