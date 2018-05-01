@@ -104,11 +104,8 @@ public class CollabListClass implements List {
 			error = -2;
 		else if (((AngryCollab) current).isAnEnemy(targetName))
 			error = -3;
-		else {
-			((AngryCollab) current).addEnemy(target);
-			if (target instanceof AngryCollab)
-				((AngryCollab) target).addEnemy(current);
-		}
+		else 
+			((AngryCollab) current).addEnemy(target); 
 		return error;
 
 	}
@@ -117,10 +114,13 @@ public class CollabListClass implements List {
 	public int removeEnemy(String vedetaName, String targetName) {
 		int error = 0;
 		AbsCollaboratorClass current = searchByName(vedetaName);
+		AbsCollaboratorClass target = searchByName(targetName);
 		if ((((current != null) && (current instanceof AngryCollab) == false)) || (current == null))
-			error = -1; 
-		else if (searchByName(targetName) == null || ((AngryCollab) current).isAnEnemy(targetName)==false)
+			error = -1;
+		else if (target == null || ((AngryCollab) current).isAnEnemy(targetName) == false)
 			error = -2;
+		else
+			((AngryCollab) current).removeEnemy(target);
 		return error;
 
 	}

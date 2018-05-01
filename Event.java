@@ -1,5 +1,6 @@
 
 import java.time.LocalDateTime;
+import generics.Array;
 
 public interface Event {
 
@@ -36,5 +37,7 @@ public interface Event {
 	AbsCollaboratorClass getProd();
 
 	AbsCollaboratorClass getDir();
+
+	Array<AbsCollaboratorClass> getCollabs();
 
 }

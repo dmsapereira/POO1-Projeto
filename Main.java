@@ -241,7 +241,7 @@ public class Main {
 		min = in.nextInt();
 		dur = in.nextInt();
 		in.nextLine();
-		start = LocalDateTime.of(year, month, day, hr, min);
+		start = LocalDateTime.of(year, month, day, hr, min); 
 		String producer = in.nextLine().trim();
 		String director = in.nextLine().trim();
 		String technician = in.nextLine().trim();
@@ -254,7 +254,7 @@ public class Main {
 		for (int i = 3; i < nCollabs + 3; i++) {
 			collabs[i] = in.nextLine().trim();
 		}
-		switch (system.addEvent(collabs, start, dur, place)) {
+		switch (system.addEvent(collabs, start, dur, place)) {  
 		case 1:
 			System.out.println("Local desconhecido.");
 			break;
@@ -295,10 +295,10 @@ public class Main {
 
 	private static void amua(Scanner in, PlannerClass system) {
 		String vedeta, target;
-		vedeta = in.nextLine().trim();
+		vedeta = in.nextLine().trim(); 
 		target = in.nextLine().trim();
 		int error = system.addEnemy(vedeta, target);
-		switch (error) {
+		switch (error) { 
 		case -1:
 			System.out.println(vedeta + " nao e uma vedeta.");
 			break;
@@ -317,7 +317,7 @@ public class Main {
 
 	private static void listBl(Scanner in, PlannerClass system) {
 		String vedetaName = in.nextLine().trim();
-		if (system.getEnemies(vedetaName).iterator() == null)
+		if (system.getEnemies(vedetaName).iterator() == null) 
 			System.out.println("Mas quem e " + vedetaName + ".");
 		else {
 			Iterator<AbsCollaboratorClass> itera = system.getEnemies(vedetaName).iterator();
@@ -332,10 +332,11 @@ public class Main {
 		int error = system.removeEnemy(vedetaName, targetName); 
 		switch (error) {
 		case -1:
-			System.out.println(vedetaName + " nao e um vedeta.");
+			System.out.println(vedetaName + " nao e uma vedeta.");
 			break;
 		case -2:
 			System.out.println("Nao existe zanga com " + targetName + ".");
+			break;
 		default:
 			System.out.println(vedetaName + " <3 " + targetName + ". " + error + " gravacoes salvas!");
 		}

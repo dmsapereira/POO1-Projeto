@@ -56,7 +56,7 @@ public class EventListClass implements EventList {
 		int tracker;
 		LocalDateTime min;
 		Event aux;
-		Iterator<Event> itera = events.iterator();
+		Iterator<Event> itera = events.iterator(); 
 		min = itera.next().getStart();
 		tracker = 0;
 		while (itera.hasNext()) {
@@ -73,10 +73,10 @@ public class EventListClass implements EventList {
 
 	@Override
 	public boolean checkDate(LocalDateTime date) {
-		if (pastEvents.get(0) == null)
+		if (pastEvents.get(0) == null) 
 			return false;
 		else
-			return (pastEvents.get(pastEvents.size()).getEnd().isBefore(date));
+			return (pastEvents.get(pastEvents.size() - 1).getEnd().isAfter(date));
 	}
 
 	@Override

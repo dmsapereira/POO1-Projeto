@@ -84,13 +84,7 @@ public class EventClass implements Event {
 
 	@Override
 	public boolean checkForSenior() {
-		Iterator<AbsCollaboratorClass> itera = collabs.iterator();
-		while (itera.hasNext()) {
-			AbsCollaboratorClass aux = itera.next();
-			if ((aux instanceof ProducerClass) && ((ProducerClass) aux).getRep().equals("SENIOR"))
-				return true;
-		}
-		return false;
+		return ((ProducerClass) collabs.get(0)).getRep().equals("SENIOR");
 	}
 
 	@Override
@@ -110,7 +104,7 @@ public class EventClass implements Event {
 
 	@Override
 	public int getBudget() {
-		int budget = this.scenario.getCost(); 
+		int budget = this.scenario.getCost();
 		Iterator<AbsCollaboratorClass> itera = collabs.iterator();
 		while (itera.hasNext()) {
 			budget += itera.next().getPay();
@@ -126,6 +120,12 @@ public class EventClass implements Event {
 	@Override
 	public AbsCollaboratorClass getDir() {
 		return collabs.get(1);
+	}
+
+	@Override
+	public Array<AbsCollaboratorClass> getCollabs() {
+		// TODO Auto-generated method stub
+		return collabs;
 	}
 
 }

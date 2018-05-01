@@ -2,9 +2,9 @@ import generics.*;
 
 public interface AngryCollab {
 	
-	boolean addEnemy(AbsCollaboratorClass enemy);
+	void addEnemy(AbsCollaboratorClass enemy);
 	
-	boolean removeEnemy(AbsCollaboratorClass enemy);
+	void removeEnemy(AbsCollaboratorClass enemy);
 	
 	boolean isAnEnemy(String name);
 	

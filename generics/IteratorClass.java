@@ -18,7 +18,7 @@ public class IteratorClass<E> implements Iterator<E> {
 
 	@Override
 	public boolean hasNext() {
-		return current < counter;
+		return current < counter; 
 	}
 
 	@Override

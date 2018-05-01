@@ -88,7 +88,7 @@ public class PlannerClass implements Planner {
 			error = 1;
 		else if (events.checkDate(start))
 			error = 2;
-		else if (places.getPlace(scenario).getCost() <= 0)
+		else if (duration <= 0)
 			error = 3;
 		else if (this.collabs.getCollabByName(collabs[0]) == null
 				|| !(this.collabs.getCollabByName(collabs[0]) instanceof ProducerClass))
@@ -103,21 +103,21 @@ public class PlannerClass implements Planner {
 			error = 7;
 		else if (checkEnemies(collabs)) {
 			events.suspendEvent(start, places.getPlace(scenario));
+			events.addEvent(current);
 			error = 8;
 		} else if (!(this.checkEventAvailability(current)))
 			error = 9;
-		/*
-		 * else if (current.checkForSenior()) { Event aux = conflictSolver(current); if
-		 * (aux != null) aux.delayEvent(current.getEnd()); error = 10;
-		 */
-		else
+		else if (seniorClash(current)) {
+			error = 10;
+			events.addEvent(current);
+		} else
 			events.addEvent(current);
 		return error;
 
 	}
 
 	private boolean checkCollabs(String[] collabs) {
-		for (int i = 3; i < collabs.length - 3; i++) {
+		for (int i = 3; i < collabs.length; i++) {
 			if (this.collabs.getCollabByName(collabs[i]) == null)
 				return false;
 		}
@@ -129,9 +129,10 @@ public class PlannerClass implements Planner {
 		for (int i = 0; i < collabs.length; i++) {
 			current = this.collabs.getCollabByName(collabs[i]);
 			for (int j = i; j < collabs.length; j++) {
-				if (current instanceof AngryCollab)
+				if (current instanceof AngryCollab) {
 					if (((AngryCollab) current).isAnEnemy(collabs[j]))
 						return true;
+				}
 			}
 		}
 		return false;
@@ -150,36 +151,20 @@ public class PlannerClass implements Planner {
 		Iterator<Event> itera = events.eventsIterator();
 		while (itera.hasNext()) {
 			aux = itera.next();
-			if (aux.getPlace().equals(current.getPlace())) {
-				if (aux.getEnd().isAfter(current.getStart())) {
-					if (current.checkForSenior() && !(aux.checkForSenior()))
+			if (aux.getPlace().equals(current.getPlace())) { 
+				if (!(aux.getEnd().isBefore(current.getStart()) || aux.getStart().isAfter(current.getEnd()))) {
+					if (((current.checkForSenior() && !(aux.checkForSenior()))
+							|| (!(current.checkForSenior()) && aux.checkForSenior())) && current.sameCollab(aux)) 
 						return true;
 					else
 						return false;
 				}
-			} else if (aux.getEnd().isAfter(current.getStart())) {
+			} else if (!(aux.getEnd().isBefore(current.getStart()) || aux.getStart().isAfter(current.getEnd()))) {
 				if (current.sameCollab(aux))
 					return false;
 			}
 		}
 		return true;
-	}
-
-	private Event conflictSolver(Event current) {
-		Event aux;
-		Iterator<Event> itera = events.eventsIterator();
-		while (itera.hasNext()) {
-			aux = itera.next();
-			if (aux.getPlace().equals(current.getPlace())) {
-				if (aux.getEnd().isBefore(current.getStart()))
-					if (current.checkForSenior() && !(aux.checkForSenior())) {
-						return aux;
-
-					}
-
-			}
-		}
-		return null;
 	}
 
 	@Override
@@ -192,9 +177,7 @@ public class PlannerClass implements Planner {
 			itera = events.eventsIterator();
 			while (itera.hasNext()) {
 				aux = itera.next();
-				if (aux.collabExistence(vedetaName) && aux.collabExistence(targetName)
-						&&aux.isOnHold()) {
-					//VERIFICAR OS ENEMIES DE TODOS OS DO EVENTO
+				if (aux.collabExistence(vedetaName) && aux.collabExistence(targetName) && noMoreEnemies(aux)) {
 					aux.activateEvent();
 					savedCounter++;
 				}
@@ -202,6 +185,23 @@ public class PlannerClass implements Planner {
 			return savedCounter;
 		}
 		return error;
+	}
+
+	private boolean noMoreEnemies(Event current) {
+		AbsCollaboratorClass collab;
+		Iterator<AbsCollaboratorClass> aux;
+		Iterator<AbsCollaboratorClass> itera = current.getCollabs().iterator();
+		while (itera.hasNext()) {
+			collab = itera.next();
+			if (collab instanceof AngryCollab) {
+				aux = current.getCollabs().iterator();
+				while (aux.hasNext()) {
+					if (((AngryCollab) collab).isAnEnemy(aux.next().getName()))
+						return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -232,7 +232,7 @@ public class PlannerClass implements Planner {
 		Event aux;
 		Array<Event> origin = events.getEvents();
 		for (int i = 0; i < origin.size(); i++) {
-			for (int j = i + 1; j < origin.size() - 1; j++) {
+			for (int j = i + 1; j < origin.size(); j++) {
 				if (origin.get(i).getStart().isAfter(origin.get(j).getStart())) {
 					aux = origin.get(j);
 					origin.removeAt(j);
@@ -247,7 +247,6 @@ public class PlannerClass implements Planner {
 
 	@Override
 	public boolean doesCollabExist(String name) {
-		// TODO Auto-generated method stub
 		return collabs.getCollabByName(name) != null;
 	}
 
@@ -277,7 +276,6 @@ public class PlannerClass implements Planner {
 
 	@Override
 	public Iterator<Event> getCollabEvents(String name) {
-		// TODO Auto-generated method stub
 		Event aux;
 		Array<Event> origin = new ArrayClass<Event>();
 		Iterator<Event> itera = events.getEvents().iterator();
@@ -302,7 +300,6 @@ public class PlannerClass implements Planner {
 
 	@Override
 	public Event doEvent() {
-		// TODO Auto-generated method stub
 		if (events.getEvents().size() == 0)
 			return null;
 		else {
@@ -313,7 +310,43 @@ public class PlannerClass implements Planner {
 
 	@Override
 	public boolean doesPlaceExist(String name) {
-		// TODO Auto-generated method stub
 		return places.alreadyExists(name);
+	}
+
+	private boolean seniorClash(Event current) {
+		Event aux;
+		boolean result = false;
+		Iterator<Event> itera = events.eventsIterator();
+		while (itera.hasNext()) {
+			aux = itera.next();
+			if (aux.getPlace().equals(current.getPlace())) {
+				if (!(aux.getEnd().isBefore(current.getStart()) || aux.getStart().isAfter(current.getEnd()))) {
+					if (current.checkForSenior() && !(aux.checkForSenior()) && current.sameCollab(aux)) {
+						postponeEvent(aux);
+						result = true;
+					} else if (aux.checkForSenior() && !(current.checkForSenior()) && current.sameCollab(aux)) {
+						postponeEvent(current);
+						result = true;
+					}
+
+				}
+			}
+		}
+		return result;
+	}
+
+	private void postponeEvent(Event delayed) {
+		Event aux;
+		Iterator<Event> itera;
+		boolean scheduled = false;
+		while (scheduled == false) {
+			delayed.delayEvent(delayed.getStart().plusDays(1));
+			itera = events.eventsIterator();
+			while (itera.hasNext()) {
+				aux = itera.next();
+				if (aux.getEnd().isBefore(delayed.getStart()) || aux.getStart().isBefore(delayed.getEnd()))
+					scheduled = true;
+			}
+		}
 	}
 }

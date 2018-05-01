@@ -11,20 +11,12 @@ public class AngryActorClass extends ActorClass implements AngryCollab {
 		enemies = new ArrayClass<AbsCollaboratorClass>();
 	}
 
-	public boolean addEnemy(AbsCollaboratorClass enemy) {
-		if (isAnEnemy(enemy.getName()) == false) {
+	public void addEnemy(AbsCollaboratorClass enemy) {
 			enemies.insertLast(enemy);
-			return true;
-		} else
-			return false;
 	}
 
-	public boolean removeEnemy(AbsCollaboratorClass enemy) {
-		if (isAnEnemy(enemy.getName())) {
+	public void removeEnemy(AbsCollaboratorClass enemy) {
 			enemies.remove(enemy);
-			return true;
-		} else
-			return false;
 	}
 
 	public boolean isAnEnemy(String name) {

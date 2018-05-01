@@ -38,7 +38,7 @@ public class ArrayClass<E> implements Array<E> {
 	public void insertLast(E elem) {
 		if (counter == array.length)  // se necessario, aumentar vector
 			resize();
-		array[counter++] = elem;
+		array[counter++] = elem;  
 	}
 
 	@Override
